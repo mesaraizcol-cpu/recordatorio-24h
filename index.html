@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recordatorio de 24 horas | Mesa Raíz</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23fffaf1%22%2F%3E%3Cpath%20d%3D%22M15%2015C30%208%2049%2013%2055%2031C58%2042%2053%2054%2053%2054C44%2050%2043%2040%2031%2042C16%2044%209%2032%2015%2015Z%22%20fill%3D%22none%22%20stroke%3D%22%23825226%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2238%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2218%22%20font-weight%3D%22700%22%20fill%3D%22%23825226%22%3Emr%3C%2Ftext%3E%3C%2Fsvg%3E">
+  <style>
+
+    :root {
+      --naranja: #f4a53b;
+      --lima: #ebf498;
+      --chocolate: #825226;
+      --menta: #b2dd9b;
+      --tinta: #332315;
+      --papel: #fffaf1;
+      --suave: #f7eddb;
+      --linea: rgba(130, 82, 38, .22);
+      --linea-fuerte: rgba(130, 82, 38, .38);
+      --sombra: 0 18px 50px rgba(80, 50, 22, .11);
+      --radio: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Nunito", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--tinta);
+      background:
+        linear-gradient(135deg, rgba(235, 244, 152, .45), transparent 36%),
+        linear-gradient(315deg, rgba(178, 221, 155, .35), transparent 40%),
+        var(--papel);
+      overflow-x: hidden;
+    }
+
+    button, input, textarea, select { font: inherit; }
+
+    .shell {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+      overflow-wrap: anywhere;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 28px;
+      align-items: center;
+      padding: 22px 0 26px;
+      border-bottom: 1px solid var(--linea);
+    }
+
+    header > * { min-width: 0; }
+
+
+    .brand {
+      display: block;
+      width: 132px;
+    }
+
+    .brand-svg { width: 100%; height: auto; display: block; color: var(--chocolate); }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--chocolate);
+      font-weight: 800;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      font-size: .78rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 4.1rem);
+      line-height: .98;
+      max-width: 820px;
+      color: var(--chocolate);
+      letter-spacing: 0;
+    }
+
+    .intro {
+      max-width: 780px;
+      margin: 14px 0 0;
+      font-size: 1.08rem;
+      line-height: 1.55;
+    }
+
+    .progress-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      margin: 0 -14px;
+      padding: 12px 14px;
+      background: rgba(255, 250, 241, .94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--linea);
+    }
+
+    .progress-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 8px;
+      color: var(--chocolate);
+      font-weight: 800;
+      font-size: .92rem;
+    }
+
+    .progress {
+      height: 10px;
+      background: rgba(130, 82, 38, .12);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 25%;
+      background: linear-gradient(90deg, var(--naranja), var(--menta));
+      border-radius: inherit;
+      transition: width .25s ease;
+    }
+
+    main { padding-top: 26px; }
+
+    .step { display: none; }
+    .step.active { display: block; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: end;
+      margin: 0 0 18px;
+    }
+
+    h2 {
+      margin: 0;
+      color: var(--chocolate);
+      font-size: clamp(1.55rem, 2.6vw, 2.35rem);
+      line-height: 1.08;
+    }
+
+    .hint {
+      margin: 8px 0 0;
+      color: rgba(51, 35, 21, .78);
+      line-height: 1.5;
+      max-width: 720px;
+    }
+
+    .panel {
+      background: rgba(255, 250, 241, .76);
+      border: 1px solid var(--linea);
+      box-shadow: var(--sombra);
+      border-radius: var(--radio);
+      padding: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    label {
+      display: block;
+      color: var(--chocolate);
+      font-weight: 800;
+      margin: 0 0 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--linea-fuerte);
+      border-radius: 8px;
+      padding: 11px 12px;
+      color: var(--tinta);
+      background: rgba(255, 255, 255, .68);
+      outline-color: var(--naranja);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 82px;
+    }
+
+    .consent {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-left: 5px solid var(--menta);
+      background: rgba(178, 221, 155, .18);
+      border-radius: 6px;
+      line-height: 1.45;
+    }
+
+    .meal-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    details.meal {
+      background: rgba(255, 250, 241, .82);
+      border: 1px solid var(--linea);
+      border-radius: var(--radio);
+      overflow: clip;
+      box-shadow: 0 10px 28px rgba(80, 50, 22, .06);
+    }
+
+    details.meal[open] { border-color: var(--linea-fuerte); }
+
+    summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px 18px;
+      color: var(--chocolate);
+      font-weight: 900;
+      background: rgba(235, 244, 152, .22);
+    }
+
+    summary::-webkit-details-marker { display: none; }
+
+    .meal-status {
+      min-width: max-content;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(244, 165, 59, .2);
+      color: var(--chocolate);
+      font-size: .86rem;
+      font-weight: 800;
+    }
+
+    .meal-body {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .meal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .span-2 { grid-column: 1 / -1; }
+
+    .choice-row, .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .scale {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(42px, 1fr));
+      gap: 8px;
+    }
+
+    .choice, .chip, .scale button {
+      border: 1px solid var(--linea-fuerte);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .62);
+      color: var(--tinta);
+      padding: 8px 12px;
+      cursor: pointer;
+      min-height: 40px;
+      font-weight: 800;
+    }
+
+    .choice[aria-pressed="true"], .chip[aria-pressed="true"], .scale button[aria-pressed="true"] {
+      background: var(--chocolate);
+      color: #fffaf1;
+      border-color: var(--chocolate);
+    }
+
+    .scale-wrap {
+      display: grid;
+      gap: 6px;
+    }
+
+    .scale-labels {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(42px, 1fr));
+      gap: 8px;
+      color: rgba(51, 35, 21, .68);
+      font-size: .86rem;
+      line-height: 1.25;
+    }
+
+    .scale-labels span:first-child {
+      grid-column: 1 / 3;
+      text-align: left;
+    }
+
+    .scale-labels span:last-child {
+      grid-column: 4 / 6;
+      text-align: right;
+    }
+
+    .factor-note {
+      color: rgba(51, 35, 21, .72);
+      font-size: .9rem;
+      margin-top: -4px;
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .guide-item {
+      padding: 14px;
+      border: 1px solid var(--linea);
+      border-radius: var(--radio);
+      background: rgba(255, 255, 255, .38);
+    }
+
+    .guide-item.wide {
+      grid-column: 1 / -1;
+    }
+
+    .guide-item p {
+      margin: 0 0 10px;
+      line-height: 1.42;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--linea);
+    }
+
+    .btn {
+      border: 1px solid var(--linea-fuerte);
+      border-radius: 8px;
+      min-height: 44px;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, .56);
+      color: var(--chocolate);
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .btn.primary {
+      background: var(--chocolate);
+      color: var(--papel);
+      border-color: var(--chocolate);
+    }
+
+    .btn.accent {
+      background: var(--naranja);
+      color: var(--tinta);
+      border-color: var(--naranja);
+    }
+
+    .btn:disabled {
+      opacity: .48;
+      cursor: not-allowed;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      border: 1px solid var(--linea);
+      border-radius: var(--radio);
+      padding: 14px;
+      background: rgba(235, 244, 152, .17);
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--chocolate);
+      font-size: 1.75rem;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .storage-note {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: var(--radio);
+      background: rgba(244, 165, 59, .15);
+      border: 1px solid rgba(244, 165, 59, .5);
+      line-height: 1.45;
+    }
+
+    .hidden { display: none !important; }
+
+    .meal-detail.is-hidden {
+      display: none;
+    }
+
+    @media (max-width: 860px) {
+      header { grid-template-columns: 1fr; gap: 18px; }
+      .brand { width: 118px; }
+      .grid, .meal-grid, .guide-grid, .summary-grid { grid-template-columns: 1fr; }
+      .section-head { align-items: start; flex-direction: column; }
+    }
+
+    @media (max-width: 560px) {
+      .shell { width: min(100% - 20px, 1180px); padding-top: 14px; }
+      .shell * { max-width: 100%; min-width: 0; }
+      .progress-wrap { margin: 0; padding-left: 0; padding-right: 0; }
+      .panel, .meal-body { padding: 14px; }
+      h1, h2, p, label, .intro, .hint, .consent { overflow-wrap: anywhere; }
+      summary { padding: 14px; align-items: start; }
+      .choice, .chip, .scale button { flex: 1 1 auto; }
+      .scale button { min-width: 46px; }
+      .actions .btn { flex: 1 1 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <a class="brand" href="#" aria-label="Mesa Raíz">
+        <svg class="brand-svg" viewBox="0 0 160 150" role="img" aria-label="Mesa Raíz"><path d="M30 23C70 8 128 21 143 73C151 103 134 135 134 135C111 121 105 100 72 105C31 111 12 73 30 23Z" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><text x="80" y="68" text-anchor="middle" font-size="30" font-weight="900" fill="currentColor">mesa</text><text x="80" y="103" text-anchor="middle" font-size="40" font-weight="900" fill="currentColor">raíz</text></svg>
+      </a>
+      <div>
+        <p class="eyebrow">Programa alimentación posible</p>
+        <h1>Recordatorio de 24 horas</h1>
+        <p class="intro">Una herramienta breve para mirar un día real de alimentación sin medir porciones, contar calorías ni juzgar. La información queda organizada para que el equipo nutricional pueda leer patrones subjetivos de hambre, saciedad, tiempo, fatiga, culpa, compras, cocina y vida social.</p>
+      </div>
+    </header>
+
+    <div class="progress-wrap" aria-label="Progreso del formulario">
+      <div class="progress-meta">
+        <span id="stepLabel">Paso 1 de 4</span>
+        <span id="completionLabel">Inicio</span>
+      </div>
+      <div class="progress"><span id="progressBar"></span></div>
+    </div>
+
+    <main>
+      <form id="recallForm">
+        <section class="step active" data-step="0">
+          <div class="section-head">
+            <div>
+              <h2>Inicio</h2>
+              <p class="hint">Estos datos ayudan a ubicar el día recordado. Puedes usar un código si prefieren no registrar nombres completos.</p>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="grid">
+              <div>
+                <label for="participant">Nombre o código</label>
+                <input id="participant" name="participant" autocomplete="name" placeholder="Ej. Participante 04">
+              </div>
+              <div>
+                <label for="recallDate">Fecha del día recordado</label>
+                <input id="recallDate" name="recallDate" type="date">
+              </div>
+              <div>
+                <label for="dayType">Este día fue</label>
+                <select id="dayType" name="dayType">
+                  <option value="">Selecciona</option>
+                  <option>Muy parecido a mi rutina</option>
+                  <option>Más o menos parecido a mi rutina</option>
+                  <option>Diferente a mi rutina</option>
+                  <option>No sé</option>
+                </select>
+              </div>
+            </div>
+            <p class="consent">Tus respuestas serán usadas por el equipo de Mesa Raíz para comprender mejor tu alimentación y acompañarte desde una mirada sin juicio. No se usan para calificarte ni compararte.</p>
+          </div>
+        </section>
+
+        <section class="step" data-step="1">
+          <div class="section-head">
+            <div>
+              <h2>Tiempos de comida</h2>
+              <p class="hint">Abre cada momento del día. Lo único abierto es la descripción del alimento; el resto se marca rápido.</p>
+            </div>
+          </div>
+          <div id="mealList" class="meal-list"></div>
+        </section>
+
+        <section class="step" data-step="2">
+          <div class="section-head">
+            <div>
+              <h2>Guía de observación sin juicio</h2>
+              <p class="hint">Piensa en el día completo y en tu semana. Marca lo que ayuda a entender cuándo se complica más la alimentación.</p>
+            </div>
+          </div>
+          <div class="panel">
+            <div id="guideGrid" class="guide-grid"></div>
+            <div id="summary" class="hidden" aria-live="polite"></div>
+            <p id="storageNote" class="storage-note hidden"></p>
+          </div>
+        </section>
+
+        <div class="actions">
+          <button class="btn" type="button" id="prevBtn">Atrás</button>
+          <div class="choice-row">
+            <button class="btn primary" type="button" id="nextBtn">Siguiente</button>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "mesa_raiz_recordatorios_24h";
+    const SUBMIT_ENDPOINT = "https://script.google.com/macros/s/AKfycbzumCAAzy5klUfRva4mfgOJO6EVaUmmr1khgs_zsAMskPh_07XRZTrjK6JnWOcjGMFO/exec";
+
+    const meals = [
+      "Al despertar / antes del desayuno",
+      "Desayuno",
+      "Refrigerio / media mañana",
+      "Almuerzo",
+      "Refrigerio / media tarde",
+      "Cena",
+      "Antes de acostarte"
+    ];
+
+    const associations = [
+      "Tranquilidad",
+      "Disfrute / placer",
+      "Compañía agradable",
+      "Cuidado de mí",
+      "Prisa / poco tiempo",
+      "Cansancio o fatiga",
+      "Ansiedad o estrés",
+      "Culpa o incomodidad",
+      "Rutina / costumbre",
+      "No sé"
+    ];
+
+    const guide = [
+      ["tiempo", "Tiempo", "¿Qué tanto el tiempo o la prisa influyeron en tu alimentación hoy?"],
+      ["fatiga", "Fatiga", "¿Qué tanto el cansancio influyó en lo que comiste, compraste o preparaste?"],
+      ["hambreAcumulada", "Hambre acumulada", "¿Qué tanto llegaste con demasiada hambre a algún momento del día?"],
+      ["culpa", "Culpa", "¿Qué tanto apareció culpa, incomodidad o sensación de “lo hice mal”?"],
+      ["compras", "Compras", "¿Qué tanto influyó lo que había disponible en casa o cerca?"],
+      ["cocina", "Cocina", "¿Qué tanto influyó tener o no tener tiempo, energía o recursos para cocinar?"],
+      ["vidaSocial", "Vida social", "¿Qué tanto otras personas, planes o compromisos cambiaron tu forma de comer?"]
+    ];
+
+    const state = {
+      step: 0,
+      meals: {},
+      guide: {}
+    };
+
+    const form = document.getElementById("recallForm");
+    const mealList = document.getElementById("mealList");
+    const guideGrid = document.getElementById("guideGrid");
+    const steps = Array.from(document.querySelectorAll(".step"));
+    const stepLabel = document.getElementById("stepLabel");
+    const completionLabel = document.getElementById("completionLabel");
+    const progressBar = document.getElementById("progressBar");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const summary = document.getElementById("summary");
+    const storageNote = document.getElementById("storageNote");
+
+    function slug(text) {
+      return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+    }
+
+    function makeScale(name, left, right) {
+      return `
+        <div class="scale-wrap" data-scale="${name}">
+          <div class="scale" role="group" aria-label="${name}">
+            ${[1,2,3,4,5].map(value => `<button type="button" data-value="${value}" aria-pressed="false">${value}</button>`).join("")}
+          </div>
+          <div class="scale-labels"><span>${left}</span><span>${right}</span></div>
+        </div>
+      `;
+    }
+
+    function renderMeals() {
+      mealList.innerHTML = meals.map((meal, index) => {
+        const id = slug(meal);
+        return `
+          <details class="meal" ${index === 0 ? "open" : ""} data-meal="${id}">
+            <summary>
+              <span>${meal}</span>
+              <span class="meal-status" id="${id}_status">Pendiente</span>
+            </summary>
+            <div class="meal-body">
+              <div>
+                <label>¿Comiste o tomaste algo?</label>
+                <div class="choice-row" data-choice="${id}_ate">
+                  ${["Sí", "No"].map(option => `<button type="button" class="choice" data-value="${option}" aria-pressed="false">${option}</button>`).join("")}
+                </div>
+              </div>
+              <div class="meal-grid meal-detail" data-detail="${id}">
+                <div class="span-2">
+                  <label for="${id}_description">¿Qué comiste o tomaste?</label>
+                  <textarea id="${id}_description" data-field="${id}_description" placeholder="Descríbelo como lo recuerdes, sin medir ni calcular. Ej.: café con leche, arepa con queso, arroz con pollo, fruta, agua."></textarea>
+                </div>
+                <div class="span-2">
+                  <label>A este tiempo de comida llegaste</label>
+                  ${makeScale(`${id}_hunger`, "Sin hambre", "Con mucha hambre")}
+                </div>
+                <div class="span-2">
+                  <label>Terminaste tu tiempo de comida</label>
+                  ${makeScale(`${id}_satiety`, "Insatisfecho/a", "Muy satisfecho/a")}
+                </div>
+                <div class="span-2">
+                  <label>¿Qué sensaciones o situaciones asociaste con este tiempo de comida?</label>
+                  <p class="factor-note">Marca hasta tres opciones para ${meal.toLowerCase()}. Esto ayuda a entender qué estaba pasando alrededor de ese momento.</p>
+                  <div class="chips" data-factor="${id}_factors">
+                    ${associations.map(option => `<button type="button" class="chip" data-value="${option}" aria-pressed="false">${option}</button>`).join("")}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
+        `;
+      }).join("");
+    }
+
+    function renderGuide() {
+      guideGrid.innerHTML = guide.map(([key, title, question]) => `
+        <div class="guide-item">
+          <p><strong>${title}</strong><br>${question}</p>
+          ${makeScale(`guide_${key}`, "No influyó", "Influyó mucho")}
+        </div>
+      `).join("") + `
+        <div class="guide-item wide">
+          <p><strong>Días entre semana</strong><br>¿Qué días entre semana se te complica más la alimentación?</p>
+          <div class="chips" data-multi="weekdaysComplicated">
+            ${["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "No hay un día específico", "No sé"].map(option => `<button type="button" class="chip" data-value="${option}" aria-pressed="false">${option}</button>`).join("")}
+          </div>
+        </div>
+        <div class="guide-item wide">
+          <p><strong>Fin de semana</strong><br>¿Qué tanto cambia tu alimentación los fines de semana?</p>
+          ${makeScale("guide_weekendChange", "No cambia", "Cambia mucho")}
+          <p class="factor-note">Si cambia, marca lo que suele pasar.</p>
+          <div class="chips" data-multi="weekendChanges">
+            ${["Se come fuera", "Se pide domicilio", "Cambian los horarios", "Hay más vida social", "Se cocina menos", "Se pica más entre comidas", "Hay más alcohol o bebidas azucaradas", "Se come más tarde", "Se salta alguna comida", "No sé"].map(option => `<button type="button" class="chip" data-value="${option}" aria-pressed="false">${option}</button>`).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function setPressed(group, value, multi = false, limit = Infinity) {
+      const buttons = Array.from(group.querySelectorAll("button"));
+      const button = buttons.find(btn => btn.dataset.value === value);
+      if (!button) return;
+      if (multi) {
+        const selected = buttons.filter(btn => btn.getAttribute("aria-pressed") === "true");
+        const isSelected = button.getAttribute("aria-pressed") === "true";
+        if (!isSelected && selected.length >= limit) return;
+        button.setAttribute("aria-pressed", String(!isSelected));
+      } else {
+        buttons.forEach(btn => btn.setAttribute("aria-pressed", String(btn === button)));
+      }
+    }
+
+    function bindInteractions() {
+      document.querySelectorAll("[data-choice]").forEach(group => {
+        group.addEventListener("click", event => {
+          const btn = event.target.closest("button");
+          if (!btn) return;
+          setPressed(group, btn.dataset.value);
+          updateMealStatuses();
+        });
+      });
+
+      document.querySelectorAll("[data-scale]").forEach(group => {
+        group.addEventListener("click", event => {
+          const btn = event.target.closest("button");
+          if (!btn) return;
+          setPressed(group.querySelector(".scale"), btn.dataset.value);
+        });
+      });
+
+      document.querySelectorAll("[data-factor]").forEach(group => {
+        group.addEventListener("click", event => {
+          const btn = event.target.closest("button");
+          if (!btn) return;
+          setPressed(group, btn.dataset.value, true, 3);
+          updateMealStatuses();
+        });
+      });
+
+      document.querySelectorAll("[data-multi]").forEach(group => {
+        group.addEventListener("click", event => {
+          const btn = event.target.closest("button");
+          if (!btn) return;
+          setPressed(group, btn.dataset.value, true);
+        });
+      });
+
+      document.querySelectorAll("[data-field]").forEach(field => field.addEventListener("input", updateMealStatuses));
+    }
+
+    function selectedValue(selector) {
+      const group = document.querySelector(selector);
+      if (!group) return "";
+      const selected = group.querySelector('[aria-pressed="true"]');
+      return selected ? selected.dataset.value : "";
+    }
+
+    function selectedValues(selector) {
+      const group = document.querySelector(selector);
+      if (!group) return [];
+      return Array.from(group.querySelectorAll('[aria-pressed="true"]')).map(btn => btn.dataset.value);
+    }
+
+    function scaleValue(name) {
+      return selectedValue(`[data-scale="${name}"] .scale`);
+    }
+
+    function clearPressed(container) {
+      container.querySelectorAll('[aria-pressed="true"]').forEach(item => item.setAttribute("aria-pressed", "false"));
+    }
+
+    function updateMealVisibility(mealId) {
+      const ate = selectedValue(`[data-choice="${mealId}_ate"]`);
+      const detail = document.querySelector(`[data-detail="${mealId}"]`);
+      if (!detail) return;
+      const shouldHide = ate !== "Sí";
+      detail.classList.toggle("is-hidden", shouldHide);
+      if (ate === "No") {
+        detail.querySelectorAll("textarea, input, select").forEach(field => field.value = "");
+        clearPressed(detail);
+      }
+    }
+
+    function updateAllMealVisibility() {
+      meals.forEach(meal => updateMealVisibility(slug(meal)));
+    }
+
+    function collectData() {
+      const data = {
+        id: `MR-${Date.now()}`,
+        submittedAt: new Date().toISOString(),
+        participant: document.getElementById("participant").value.trim(),
+        recallDate: document.getElementById("recallDate").value,
+        dayType: document.getElementById("dayType").value,
+        meals: {},
+        guide: {}
+      };
+
+      meals.forEach(meal => {
+        const id = slug(meal);
+        data.meals[id] = {
+          label: meal,
+          ate: selectedValue(`[data-choice="${id}_ate"]`),
+          description: selectedValue(`[data-choice="${id}_ate"]`) === "Sí" ? document.querySelector(`[data-field="${id}_description"]`).value.trim() : "",
+          hunger: selectedValue(`[data-choice="${id}_ate"]`) === "Sí" ? scaleValue(`${id}_hunger`) : "",
+          satiety: selectedValue(`[data-choice="${id}_ate"]`) === "Sí" ? scaleValue(`${id}_satiety`) : "",
+          factors: selectedValue(`[data-choice="${id}_ate"]`) === "Sí" ? selectedValues(`[data-factor="${id}_factors"]`) : []
+        };
+      });
+
+      guide.forEach(([key]) => {
+        data.guide[key] = scaleValue(`guide_${key}`);
+      });
+      data.guide.weekendChange = scaleValue("guide_weekendChange");
+      data.guide.weekdaysComplicated = selectedValues(`[data-multi="weekdaysComplicated"]`);
+      data.guide.weekendChanges = selectedValues(`[data-multi="weekendChanges"]`);
+
+      return data;
+    }
+
+    function updateMealStatuses() {
+      meals.forEach(meal => {
+        const id = slug(meal);
+        updateMealVisibility(id);
+        const ate = selectedValue(`[data-choice="${id}_ate"]`);
+        const description = document.querySelector(`[data-field="${id}_description"]`)?.value.trim();
+        const status = document.getElementById(`${id}_status`);
+        if (!status) return;
+        if (ate === "Sí" && description) status.textContent = "Registrado";
+        else if (ate) status.textContent = ate;
+        else status.textContent = "Pendiente";
+      });
+    }
+
+    function getSavedResponses() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function saveResponse(data) {
+      const responses = getSavedResponses();
+      responses.push(data);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
+      return responses.length;
+    }
+
+    async function sendToEndpoint(data) {
+      if (!SUBMIT_ENDPOINT) return { skipped: true };
+      await fetch(SUBMIT_ENDPOINT, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(data)
+      });
+      return { skipped: false };
+    }
+
+    function topFactors(data) {
+      const counts = {};
+      Object.values(data.meals).forEach(meal => {
+        meal.factors.forEach(factor => counts[factor] = (counts[factor] || 0) + 1);
+      });
+      return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 4);
+    }
+
+    function renderSummary(data) {
+      const registered = Object.values(data.meals).filter(meal => meal.ate === "Sí" && meal.description).length;
+      const highHunger = Object.values(data.meals).filter(meal => Number(meal.hunger) >= 4).length;
+      const lowSatisfaction = Object.values(data.meals).filter(meal => Number(meal.satiety) <= 2).length;
+      const associationsList = topFactors(data);
+      const weekdays = (data.guide.weekdaysComplicated || []).join(", ") || "sin días marcados";
+      const weekendChanges = (data.guide.weekendChanges || []).join(", ") || "sin cambios marcados";
+
+      summary.classList.remove("hidden");
+      summary.innerHTML = `
+        <h2>Resumen enviado</h2>
+        <p class="hint">Este resumen es solo una mirada general de tu día. La lectura completa la hará el equipo nutricional desde Google Sheets.</p>
+        <div class="summary-grid">
+          <div class="stat"><strong>${registered}</strong><span>Tiempos de comida descritos</span></div>
+          <div class="stat"><strong>${highHunger}</strong><span>Momentos con hambre alta</span></div>
+          <div class="stat"><strong>${lowSatisfaction}</strong><span>Momentos con baja satisfacción</span></div>
+        </div>
+        <p><strong>Asociaciones más repetidas:</strong> ${associationsList.length ? associationsList.map(([factor, count]) => `${factor} (${count})`).join(", ") : "sin asociaciones marcadas"}.</p>
+        <p><strong>Días entre semana más complejos:</strong> ${weekdays}.</p>
+        <p><strong>Cambio en fines de semana:</strong> ${data.guide.weekendChange || "-"} / 5. ${weekendChanges}.</p>
+      `;
+    }
+
+    function flattenResponse(data) {
+      const row = {
+        id: data.id,
+        submittedAt: data.submittedAt,
+        participant: data.participant,
+        recallDate: data.recallDate,
+        dayType: data.dayType,
+        guia_tiempo: data.guide.tiempo,
+        guia_fatiga: data.guide.fatiga,
+        guia_hambre_acumulada: data.guide.hambreAcumulada,
+        guia_culpa: data.guide.culpa,
+        guia_compras: data.guide.compras,
+        guia_cocina: data.guide.cocina,
+        guia_vida_social: data.guide.vidaSocial,
+        guia_dias_entre_semana_complicados: (data.guide.weekdaysComplicated || []).join(" | "),
+        guia_cambio_fin_de_semana: data.guide.weekendChange,
+        guia_que_cambia_fin_de_semana: (data.guide.weekendChanges || []).join(" | ")
+      };
+      Object.entries(data.meals).forEach(([key, meal]) => {
+        row[`${key}_comio_tomo`] = meal.ate;
+        row[`${key}_descripcion`] = meal.description;
+        row[`${key}_hambre`] = meal.hunger;
+        row[`${key}_saciedad`] = meal.satiety;
+        row[`${key}_asociaciones`] = meal.factors.join(" | ");
+      });
+      return row;
+    }
+
+    function showStep(index) {
+      state.step = Math.max(0, Math.min(steps.length - 1, index));
+      steps.forEach((step, i) => step.classList.toggle("active", i === state.step));
+      prevBtn.disabled = state.step === 0;
+      nextBtn.textContent = state.step === steps.length - 1 ? "Guardar respuestas" : "Siguiente";
+      const labels = ["Inicio", "Tiempos de comida", "Guía sin juicio"];
+      stepLabel.textContent = `Paso ${state.step + 1} de ${steps.length}`;
+      completionLabel.textContent = labels[state.step];
+      progressBar.style.width = `${((state.step + 1) / steps.length) * 100}%`;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function finish() {
+      const data = collectData();
+      renderSummary(data);
+      const total = saveResponse(data);
+      try {
+        const sent = await sendToEndpoint(data);
+        storageNote.classList.remove("hidden");
+        storageNote.textContent = sent.skipped
+          ? `Respuesta guardada en este navegador. Hay ${total} envío(s) almacenado(s).`
+          : "Respuesta guardada y enviada a Google Sheets correctamente.";
+      } catch (error) {
+        storageNote.classList.remove("hidden");
+        storageNote.textContent = "La respuesta quedó guardada localmente, pero no se pudo enviar a Google Sheets. Revisa la conexión e intenta de nuevo.";
+      }
+    }
+
+    renderMeals();
+    renderGuide();
+    bindInteractions();
+    updateAllMealVisibility();
+    updateMealStatuses();
+    showStep(0);
+
+    prevBtn.addEventListener("click", () => showStep(state.step - 1));
+    nextBtn.addEventListener("click", () => {
+      if (state.step === steps.length - 1) finish();
+      else showStep(state.step + 1);
+    });
+  </script>
+</body>
+</html>
